@@ -20,18 +20,42 @@ class User(BaseModel):
     phone_number: int
     created_at: datetime = datetime.now()
 
+class UserId(BaseModel):
+    id:int
 
+users = []
 app = FastAPI()
 
 @app.get('/ruta1')
 def ruta1():
     return {"message": "Bienvenido a tu primera api"}
 
+@app.get('/user')
+def get_users():
+    return users
+
 @app.post('/ruta2')
 def ruta2(user: User):
-    print(user)
     print(user.dict())
-    return True
+    users.append(user.dict())
+    return {"response": "User created succesfully"}
+
+@app.post('/user/{user_id}')
+def get_user_by_id(user_id: int):
+    for user in users:
+        print(user, type)
+        if user['id'] == user_id:
+            return user
+    return {"message": "User Not Found"}
+
+@app.post('/user')
+def obtener_usuario2(user_id:UserId):
+    for user in users:
+        print(user, type)
+        if user['id'] == user_id.id:
+            return user
+    return {"message": "User Not Found"}
+
 
 # Other way to run the server
 if __name__ == "__main__":
