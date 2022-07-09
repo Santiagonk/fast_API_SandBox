@@ -40,7 +40,7 @@ def ruta2(user: User):
     users.append(user.dict())
     return {"response": "User created succesfully"}
 
-@app.post('/user/{user_id}')
+@app.get('/user/{user_id}')
 def get_user_by_id(user_id: int):
     for user in users:
         print(user, type)
@@ -54,6 +54,25 @@ def obtener_usuario2(user_id:UserId):
         print(user, type)
         if user['id'] == user_id.id:
             return user
+    return {"message": "User Not Found"}
+
+@app.delete('/user/{user_id}')
+def delete_user(user_id: int):
+    for index, user in enumerate(users):
+        if user['id'] == user_id:
+            users.pop(index)
+            return {"message": "User deleted succesfully"}
+    return {"message": "User Not Found"}
+
+@app.put('/user/{user_id}')
+def update_user(user_id: int, updateUser: User):
+    for index, user in enumerate(users):
+        if user['id'] == user_id:
+            users[index]["first_name"] = updateUser.first_name
+            users[index]["last_name"] = updateUser.last_name
+            users[index]["address"] = updateUser.address
+            users[index]["phone_number"] = updateUser.phone_number
+            return {"message": "User updated succesfully"}
     return {"message": "User Not Found"}
 
 
