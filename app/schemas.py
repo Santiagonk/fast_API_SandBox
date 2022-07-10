@@ -18,3 +18,12 @@ class User(BaseModel):
 
 class UserId(BaseModel):
     id:int
+
+class ShowUser(BaseModel):
+    username: str
+    first_name: str
+    last_name: str
+    email: str
+    
+    class Config():
+        orm_mode = True

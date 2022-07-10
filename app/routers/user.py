@@ -1,5 +1,6 @@
+from typing import List
 from fastapi import APIRouter, Depends
-from app.schemas import User, UserId
+from app.schemas import User, UserId, ShowUser
 from app.db.database import get_db
 from sqlalchemy.orm import Session
 from app.db import models
@@ -8,13 +9,11 @@ router = APIRouter(
     prefix="/user",
     tags=["Users"]
 )
-users = []
 
-@router.get('/')
+@router.get('/', response_model=List[ShowUser])
 def get_users(db: Session = Depends(get_db)):
-    data = db.query(models.User).all()
-    print(data)
-    return users
+    user_response = db.query(models.User).all()
+    return user_response
 
 @router.post('/signup')
 def register_user(user: User, db: Session = Depends(get_db)):
@@ -41,13 +40,16 @@ def register_user(user: User, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return {"response": "User created succesfully"}
 
-@router.get('/{user_id}')
-def get_user_by_id(user_id: int):
-    for user in users:
-        print(user, type)
-        if user['id'] == user_id:
-            return user
-    return {"message": "User Not Found"}
+@router.get('/{user_id}', response_model=ShowUser)
+def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
+    # for user in users:
+    #     print(user, type)
+    #     if user['id'] == user_id:
+    #         return user
+    user_response = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user_response:
+        return {"message": "User Not Found"}
+    return user_response
 
 @router.post('/')
 def obtener_usuario2(user_id:UserId):
