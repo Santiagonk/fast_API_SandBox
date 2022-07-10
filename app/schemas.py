@@ -12,6 +12,7 @@ class User(BaseModel):
     last_name: str
     address: Optional[str]
     phone_number: int
+    email: str
     created_at: datetime = datetime.now()
 
 class UserId(BaseModel):
