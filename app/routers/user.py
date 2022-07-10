@@ -1,10 +1,9 @@
-from multiprocessing import synchronize
 from typing import List
 from fastapi import APIRouter, Depends
-from app.schemas import UpdateUser, User, UserId, ShowUser
+from app.schemas import UpdateUser, User, ShowUser
 from app.db.database import get_db
 from sqlalchemy.orm import Session
-from app.db import models
+from app.repository import user_repository
 
 router = APIRouter(
     prefix="/user",
@@ -13,71 +12,22 @@ router = APIRouter(
 
 @router.get('/', response_model=List[ShowUser])
 def get_users(db: Session = Depends(get_db)):
-    user_response = db.query(models.User).all()
-    return user_response
+    return user_repository.get_users(db)
 
 @router.post('/signup')
-def register_user(user: User, db: Session = Depends(get_db)):
-    """
-        username: str
-        password: str
-        first_name: str
-        last_name: str
-        address: Optional[str]
-        phone_number: int
-        email: str 
-    """
-    new_user = models.User(
-        username = user.username,
-        password = user.password,
-        first_name = user.first_name,
-        last_name = user.last_name,
-        phone_number = user.phone_number,
-        address = user.address,
-        email = user.email
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+def register_user(user_request: User, db: Session = Depends(get_db)):
+    user_repository.create_user(user_request,db)
     return {"response": "User created succesfully"}
 
 @router.get('/{user_id}', response_model=ShowUser)
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
-    user_response = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user_response:
-        return {"message": "User Not Found"}
+    user_response = user_repository.get_user_by_id(user_id, db)
     return user_response
-
-@router.post('/')
-def obtener_usuario2(user_id:UserId):
-    for user in users:
-        print(user, type)
-        if user['id'] == user_id.id:
-            return user
-    return {"message": "User Not Found"}
 
 @router.delete('/{user_id}')
 def delete_user(user_id: int, db: Session = Depends(get_db)):
-    user_response = db.query(models.User).filter(models.User.id == user_id)
-    if not user_response.first():
-        return {"message": "User Not Found"}
-    user_response.delete(synchronize_session=False)
-    db.commit()
-    return {"message": "User deleted succesfully"}
-    
+    return user_repository.delete_user(user_id, db)
 
 @router.patch('/{user_id}')
 def update_user(user_id: int, updateUser: UpdateUser, db: Session = Depends(get_db)):
-    user_response = db.query(models.User).filter(models.User.id == user_id)
-    if not user_response.first():
-        return {"message": "User Not Found"}
-    user_response.update(updateUser.dict(exclude_unset=True))    
-    db.commit()
-    # for index, user in enumerate(users):
-    #     if user['id'] == user_id:
-    #         users[index]["first_name"] = updateUser.first_name
-    #         users[index]["last_name"] = updateUser.last_name
-    #         users[index]["address"] = updateUser.address
-    #         users[index]["phone_number"] = updateUser.phone_number
-    return {"message": "User updated succesfully"}
-    # return {"message": "User Not Found"}
+    return user_repository.update_user(user_id, db, updateUser)
