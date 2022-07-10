@@ -8,7 +8,6 @@ router = APIRouter(
     prefix="/user",
     tags=["Users"]
 )
-
 users = []
 
 @router.get('/')
@@ -17,10 +16,29 @@ def get_users(db: Session = Depends(get_db)):
     print(data)
     return users
 
-@router.post('/')
-def ruta2(user: User):
-    print(user.dict())
-    users.append(user.dict())
+@router.post('/signup')
+def register_user(user: User, db: Session = Depends(get_db)):
+    """
+        username: str
+        password: str
+        first_name: str
+        last_name: str
+        address: Optional[str]
+        phone_number: int
+        email: str 
+    """
+    new_user = models.User(
+        username = user.username,
+        password = user.password,
+        first_name = user.first_name,
+        last_name = user.last_name,
+        phone_number = user.phone_number,
+        address = user.address,
+        email = user.email
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
     return {"response": "User created succesfully"}
 
 @router.get('/{user_id}')

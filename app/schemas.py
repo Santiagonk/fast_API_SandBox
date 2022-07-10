@@ -7,7 +7,8 @@ from pydantic import BaseModel
 
 # User Model
 class User(BaseModel):
-    id: int
+    username: str
+    password: str
     first_name: str
     last_name: str
     address: Optional[str]
