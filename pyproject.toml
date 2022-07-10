@@ -8,6 +8,7 @@ authors = ["Santiago Salgado <jssalgadog@gmail.com>"]
 python = "^3.9"
 fastapi = "^0.78.0"
 uvicorn = "^0.18.2"
+python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 
