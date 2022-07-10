@@ -1,3 +1,4 @@
+from multiprocessing import synchronize
 from typing import List
 from fastapi import APIRouter, Depends
 from app.schemas import User, UserId, ShowUser
@@ -60,12 +61,18 @@ def obtener_usuario2(user_id:UserId):
     return {"message": "User Not Found"}
 
 @router.delete('/{user_id}')
-def delete_user(user_id: int):
-    for index, user in enumerate(users):
-        if user['id'] == user_id:
-            users.pop(index)
-            return {"message": "User deleted succesfully"}
-    return {"message": "User Not Found"}
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    user_response = db.query(models.User).filter(models.User.id == user_id)
+    if not user_response.first():
+        return {"message": "User Not Found"}
+    # for index, user in enumerate(users):
+    #     if user['id'] == user_id:
+    #         users.pop(index)
+    #         return {"message": "User deleted succesfully"}
+    user_response.delete(synchronize_session=False)
+    db.commit()
+    return {"message": "User deleted succesfully"}
+    
 
 @router.put('/{user_id}')
 def update_user(user_id: int, updateUser: User):
