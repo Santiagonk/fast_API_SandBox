@@ -2,12 +2,13 @@ from sqlalchemy.orm import Session
 from app.db import models
 from app.schemas import UpdateUser
 from fastapi import HTTPException, status
+from app.hashing import Hash
 
 def create_user(user, db: Session):
     try:
         new_user = models.User(
             username = user.username,
-            password = user.password,
+            password = Hash.hash_password(user.password),
             first_name = user.first_name,
             last_name = user.last_name,
             phone_number = user.phone_number,
