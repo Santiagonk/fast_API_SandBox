@@ -6,7 +6,7 @@ import uvicorn
 from fastapi import FastAPI 
 
 # routers
-from app.routers import user
+from app.routers import user, auth
 from app.db.database import Base, engine
 
 # def create_tables():
@@ -15,6 +15,7 @@ from app.db.database import Base, engine
 
 app = FastAPI()
 app.include_router(user.router)
+app.include_router(auth.router)
 
 # Other way to run the server
 if __name__ == "__main__":
