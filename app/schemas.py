@@ -1,5 +1,5 @@
 # Python
-from typing import Optional
+from typing import Optional, Union
 from datetime import datetime
 
 # pydantic
@@ -40,3 +40,11 @@ class ShowUser(BaseModel):
 class Login(BaseModel):
     username: str
     password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Union[str, None] = None

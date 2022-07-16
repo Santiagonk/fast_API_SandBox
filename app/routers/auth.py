@@ -12,5 +12,5 @@ router = APIRouter(
 
 @router.post('/', status_code=status.HTTP_200_OK)
 def login(user: Login, db: Session = Depends(get_db)):
-    auth.auth_user(user, db)
-    return {"res": "Login accepted"}
+    token = auth.auth_user(user, db)
+    return token

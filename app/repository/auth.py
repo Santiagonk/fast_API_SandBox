@@ -3,6 +3,9 @@ from app.db import models
 from app.schemas import UpdateUser
 from fastapi import HTTPException, status
 from app.hashing import Hash
+from datetime import datetime, timedelta
+from typing import Union
+from app.token import create_access_token 
 
 def auth_user(user_request, db: Session):
     user = db.query(models.User).filter(models.User.username == user_request.username).first()
@@ -16,4 +19,9 @@ def auth_user(user_request, db: Session):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Wrong password"
         )
+    access_token = create_access_token(
+        data={"sub": user.username}
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
 
